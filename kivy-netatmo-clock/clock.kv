@@ -21,10 +21,13 @@ BoxLayout:
     Label:
         id: outsidetemp
         text: "20 C"
-        
     Label:
         id: humidity
         text: "0% Humidity"
+    Label:
+        id: rain
+        text: "Regen"
+ 
     BoxLayout:
         height: 90
         orientation: 'horizontal'
@@ -47,7 +50,7 @@ BoxLayout:
         RobotoButton:
             id: restart
             text: 'Restart'
-            on_press: app.reset()
+            on_press: app.restart()
             
 
 #    Label:

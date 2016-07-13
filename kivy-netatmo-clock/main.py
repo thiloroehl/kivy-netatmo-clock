@@ -24,8 +24,18 @@ class ClockApp(App):
         print("Calling Netatmo at "+strftime('%H:%M:%S'))
         # Device-Liste von Netatmo abholen
         try:
+            
+            
             authorization = lnetatmo.ClientAuth()
             devList = lnetatmo.DeviceList(authorization)
+            print("Connected to Netatmo")
+            # Funktionen um die ID von Modulen und Device zu ermitteln
+            print(devList.modulesNamesList())
+            # Niederschlag ist der Modulname meines Regenmessers
+            print(devList.moduleByName('GardenTemp'))
+            print("--")
+            print(devList.moduleByName('GardenRain'))
+
  
  
  
@@ -34,13 +44,16 @@ class ClockApp(App):
             # Aktuelle Aussentemperatur ausgeben
             gardentemp=devList.lastData()['GardenTemp']['Temperature']
             print (gardentemp)
+            
             self.root.ids.outsidetemp.text = "Aussen {:.2f}°C".format(gardentemp)+ " - Min {:.2f}".format(devList.lastData()['GardenTemp']['min_temp']) +" Max {:.2f}".format(devList.lastData()['GardenTemp']['max_temp']) 
-            self.root.ids.humidity.text=" Humidity {:.2f}".format(devList.lastData()['GardenTemp']['Humidity'])
-        
+            self.root.ids.humidity.text="Humidity {:.2f}".format(devList.lastData()['GardenTemp']['Humidity'])
+            self.root.ids.rain.text="Regen {:.2f}".format(devList.lastData()['GardenRain']['Rain'])+"- 24h {:.2f}".format(devList.lastData()['GardenRain']['sum_rain_24'])
             m, s = divmod(self.sw_seconds, 60)
             #           self.root.ids.stopwatch.text = ('%02d:%02d.[size=40]%02d[/size]' %
             #                                      (int(m), int(s), int(s * 100 % 100)))
-        except:
+        except IOError as e :
+            print("IO Error ")
+        except :
             print("Error occured")
 
     def start_stop(self):
@@ -53,6 +66,9 @@ class ClockApp(App):
             self.sw_started = False
 
         self.sw_seconds = 0
+    
+    def restart(self):
+        print ("Restarting..")
 
 if __name__ == '__main__':
     Window.clearcolor = get_color_from_hex('#101216')
