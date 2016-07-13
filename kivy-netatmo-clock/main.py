@@ -39,7 +39,7 @@ class ClockApp(App):
         
             m, s = divmod(self.sw_seconds, 60)
             #        self.root.ids.stopwatch.text = ('%02d:%02d.[size=40]%02d[/size]' %
-            #                                        (int(m), int(s), int(s * 100 % 100)))
+            #                                       (int(m), int(s), int(s * 100 % 100)))
         except:
             print("Error occured")
 
