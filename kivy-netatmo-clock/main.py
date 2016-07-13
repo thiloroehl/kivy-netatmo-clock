@@ -38,8 +38,8 @@ class ClockApp(App):
             self.root.ids.humidity.text=" Humidity {:.2f}".format(devList.lastData()['GardenTemp']['Humidity'])
         
             m, s = divmod(self.sw_seconds, 60)
-            #        self.root.ids.stopwatch.text = ('%02d:%02d.[size=40]%02d[/size]' %
-            #                                       (int(m), int(s), int(s * 100 % 100)))
+            #           self.root.ids.stopwatch.text = ('%02d:%02d.[size=40]%02d[/size]' %
+            #                                      (int(m), int(s), int(s * 100 % 100)))
         except:
             print("Error occured")
 
