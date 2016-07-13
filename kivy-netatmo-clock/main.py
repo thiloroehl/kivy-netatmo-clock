@@ -21,24 +21,27 @@ class ClockApp(App):
             self.sw_seconds += nap
 
         self.root.ids.time.text = strftime('[b]%H:%M[/b]:%S')
-        print("Netatmo called")
+        print("Calling Netatmo at "+strftime('%H:%M:%S'))
         # Device-Liste von Netatmo abholen
-        authorization = lnetatmo.ClientAuth()
-        devList = lnetatmo.DeviceList(authorization)
+        try:
+            authorization = lnetatmo.ClientAuth()
+            devList = lnetatmo.DeviceList(authorization)
  
  
  
-        ## Ermittlung der aktuellen Wetterdaten ---------------------------------------------
+            ## Ermittlung der aktuellen Wetterdaten ---------------------------------------------
  
-        # Aktuelle Aussentemperatur ausgeben
-        gardentemp=devList.lastData()['GardenTemp']['Temperature']
-        print (gardentemp)
-        self.root.ids.outsidetemp.text = "Aussen {:.2f}°C".format(gardentemp)+ " - Min {:.2f}".format(devList.lastData()['GardenTemp']['min_temp']) +" Max {:.2f}".format(devList.lastData()['GardenTemp']['max_temp']) 
-        self.root.ids.humidity.text=" Humidity {:.2f}".format(devList.lastData()['GardenTemp']['Humidity'])
+            # Aktuelle Aussentemperatur ausgeben
+            gardentemp=devList.lastData()['GardenTemp']['Temperature']
+            print (gardentemp)
+            self.root.ids.outsidetemp.text = "Aussen {:.2f}°C".format(gardentemp)+ " - Min {:.2f}".format(devList.lastData()['GardenTemp']['min_temp']) +" Max {:.2f}".format(devList.lastData()['GardenTemp']['max_temp']) 
+            self.root.ids.humidity.text=" Humidity {:.2f}".format(devList.lastData()['GardenTemp']['Humidity'])
         
-        m, s = divmod(self.sw_seconds, 60)
-#        self.root.ids.stopwatch.text = ('%02d:%02d.[size=40]%02d[/size]' %
-#                                        (int(m), int(s), int(s * 100 % 100)))
+            m, s = divmod(self.sw_seconds, 60)
+            #        self.root.ids.stopwatch.text = ('%02d:%02d.[size=40]%02d[/size]' %
+            #                                        (int(m), int(s), int(s * 100 % 100)))
+        except:
+            print("Error occured")
 
     def start_stop(self):
         self.root.ids.start_stop.text = 'Start' if self.sw_started else 'Stop'
