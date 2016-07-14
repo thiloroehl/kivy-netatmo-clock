@@ -3,7 +3,11 @@ from kivy.clock import Clock
 from kivy.core.text import LabelBase
 from kivy.core.window import Window
 from kivy.utils import get_color_from_hex
+import time
 import lnetatmo
+import traceback
+
+
 
 
 from time import strftime
@@ -20,7 +24,7 @@ class ClockApp(App):
         if self.sw_started:
             self.sw_seconds += nap
 
-        self.root.ids.time.text = strftime('[b]%H:%M[/b]:%S')
+        
         print("Calling Netatmo at "+strftime('%H:%M:%S'))
         # Device-Liste von Netatmo abholen
         try:
@@ -30,10 +34,13 @@ class ClockApp(App):
             devList = lnetatmo.DeviceList(authorization)
             print("Connected to Netatmo")
             # Funktionen um die ID von Modulen und Device zu ermitteln
+            print("DeviceList ")
             print(devList.modulesNamesList())
             # Niederschlag ist der Modulname meines Regenmessers
+            print("GardenTemp ")
             print(devList.moduleByName('GardenTemp'))
             print("--")
+            print("GardenRain ")
             print(devList.moduleByName('GardenRain'))
 
  
@@ -42,20 +49,60 @@ class ClockApp(App):
             ## Ermittlung der aktuellen Wetterdaten ---------------------------------------------
  
             # Aktuelle Aussentemperatur ausgeben
+            print("GardenTemperature ")
             gardentemp=devList.lastData()['GardenTemp']['Temperature']
+            print("GardenTemperature called.")
             print (gardentemp)
+        
+            # Wetterdaten des Vortages ermitteln: -----------------------------------------------
+            now = time.time()               # Von Jetzt
+            start = now - 2* 24 * 3600
+
+            #Ermittlung der Temperaturen als Liste
+            resp = devList.getMeasure( device_id='70:ee:50:17:4e:dc',      
+                           module_id='02:00:00:17:d9:24',    
+                           scale="1day",
+                           mtype="min_temp,max_temp",
+                           date_begin=start,
+                           date_end=now)
+ 
+            # Extraieren von Zeit, minTemp und Maxtemp
+            result = [(int(k),v[0],v[1]) for k,v in resp['body'].items()]
+            # Liste sortieren (nach Zeit, da erstes Element)
+            result.sort()
+        
+            messdatum = time.localtime(result[0][0])
+            #Ermittlung des Datums des Vortages der Min/Max Temperaturen vom Vortag
+            messdatum = time.localtime(result[0][0])
+ 
+            #Ermittlung der Min- und Max-Temperaturen des Vortages
+            last_temp_min = result[0][1]
+            last_temp_max = result[0][2]
+
             
-            self.root.ids.outsidetemp.text = "Aussen {:.2f}°C".format(gardentemp)+ " - Min {:.2f}".format(devList.lastData()['GardenTemp']['min_temp']) +" Max {:.2f}".format(devList.lastData()['GardenTemp']['max_temp']) 
-            self.root.ids.humidity.text="Humidity {:.2f}".format(devList.lastData()['GardenTemp']['Humidity'])
-            self.root.ids.rain.text="Regen {:.2f}".format(devList.lastData()['GardenRain']['Rain'])+"- 24h {:.2f}".format(devList.lastData()['GardenRain']['sum_rain_24'])
-            m, s = divmod(self.sw_seconds, 60)
+            self.root.ids.time.text = strftime('[b]%H:%M[/b]:%S')+"   {:.2f}°C".format(devList.lastData()['GardenTemp']['Temperature'])    
+            self.root.ids.outsidetemp.text = "{:.2f}°C".format(devList.lastData()['GardenTemp']['min_temp']) +" - {:.2f}°C".format(devList.lastData()['GardenTemp']['max_temp'])+"    Vortag: "+" {:.2f}°C".format(last_temp_min) + " - {:.2f}°C".format(last_temp_max)
+            
+            rain=devList.lastData()['GardenRain']['Rain']
+            sumrain24=devList.lastData()['GardenRain']['Rain']
+            
+            if rain > 0 or sumrain24 > 0 :
+                self.root.ids.humidity.text="Feuchtigkeit {:.2f}%".format(devList.lastData()['GardenTemp']['Humidity'])+"Regen {:.2f}".format(devList.lastData()['GardenRain']['Rain'])+"- 24h {:.2f}".format(devList.lastData()['GardenRain']['Rain'])
+            else:
+                self.root.ids.humidity.text="Feuchtigkeit {:.2f}%".format(devList.lastData()['GardenTemp']['Humidity'])
+                
+            #m, s = divmod(self.sw_seconds, 60)
             #           self.root.ids.stopwatch.text = ('%02d:%02d.[size=40]%02d[/size]' %
             #                                      (int(m), int(s), int(s * 100 % 100)))
         except IOError as e :
-            print("IO Error ")
+            print ("IO Error ")
         except :
             print("Error occured")
-
+            print (traceback.format_exc())
+        
+        print("Everything okay")
+        self.root.ids.status.text="Netatmo called at - "+strftime('%H:%M:%S')
+        
     def start_stop(self):
         self.root.ids.start_stop.text = 'Start' if self.sw_started else 'Stop'
         self.sw_started = not self.sw_started

@@ -1,6 +1,6 @@
 <Label>:
     font_name: 'Roboto'
-    font_size: 30
+    font_size: 35
     markup: True
 
 <RobotoButton@Button>:
@@ -25,9 +25,15 @@ BoxLayout:
         id: humidity
         text: "0% Humidity"
     Label:
-        id: rain
-        text: "Regen"
- 
+    	id: alarmstatus
+    	text: "ok"
+    Label:
+    	id: status
+    	text: "Starting..."
+    	font_size: 25
+    	
+    	
+    
     BoxLayout:
         height: 90
         orientation: 'horizontal'
@@ -46,11 +52,18 @@ BoxLayout:
             on_press: app.reset()
             background_normal: 'red_button_normal.png'
             background_down: 'red_button_down.png'
+		
+		RobotoButton:
+            id: start_music
+            text: 'Musik an'
+            on_press: app.start_stop()
+		
          
         RobotoButton:
             id: restart
             text: 'Restart'
-            on_press: app.restart()
+            on_press: app.stop()
+            
             
 
 #    Label:
