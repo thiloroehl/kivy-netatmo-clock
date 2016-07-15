@@ -84,7 +84,7 @@ class ClockApp(App):
 
             
             self.root.ids.time.text = strftime('[b]%H:%M[/b]:%S')+"   {:.2f}°C".format(devList.lastData()['GardenTemp']['Temperature'])    
-            self.root.ids.outsidetemp.text = "{:.2f}°C".format(devList.lastData()['GardenTemp']['min_temp']) +" - {:.2f}°C".format(devList.lastData()['GardenTemp']['max_temp'])+"    Vortag: "+" {:.2f}°C".format(last_temp_min) + " - {:.2f}°C".format(last_temp_max)
+            self.root.ids.outsidetemp.text = "{:.2f}°C".format(devList.lastData()['GardenTemp']['min_temp']) +" - {:.2f}°C".format(devList.lastData()['GardenTemp']['max_temp'])+"    Gestern: "+" {:.2f}°C".format(last_temp_min) + " - {:.2f}°C".format(last_temp_max)
             
             rain=devList.lastData()['GardenRain']['Rain']
             sumrain24=devList.lastData()['GardenRain']['Rain']
