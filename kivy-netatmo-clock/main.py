@@ -17,11 +17,20 @@ class ClockApp(App):
     debug=False
     ip="x.x.x.x"
     sw_started = False
-    sw_seconds = 0
+    sw_seconds = 2
     ipfetched=False
+    GardenTemperature=1.5
+    time_started=False
 
     def on_start(self):
-        Clock.schedule_interval(self.update, 5)
+        Clock.schedule_interval(self.update, 10)
+        Clock.schedule_interval(self.updateTime,1)
+    def updateTime(self,nap):
+        if self.time_started:
+            self.root.ids.time.text = strftime('[b]%H:%M[/b]:%S')+ self.GardenTemperature
+        
+            
+            
 
     def update(self, nap):
         if self.sw_started:
@@ -83,7 +92,9 @@ class ClockApp(App):
             last_temp_max = result[0][2]
 
             
-            self.root.ids.time.text = strftime('[b]%H:%M[/b]:%S')+"   {:.2f}°C".format(devList.lastData()['GardenTemp']['Temperature'])    
+            #self.root.ids.time.text = strftime('[b]%H:%M[/b]:%S')+"   {:.2f}°C".format(devList.lastData()['GardenTemp']['Temperature'])
+            self.time_started=True
+            self.GardenTemperature="   {:.2f}°C".format(devList.lastData()['GardenTemp']['Temperature'])
             self.root.ids.outsidetemp.text = "{:.2f}°C".format(devList.lastData()['GardenTemp']['min_temp']) +" - {:.2f}°C".format(devList.lastData()['GardenTemp']['max_temp'])+"    Gestern: "+" {:.2f}°C".format(last_temp_min) + " - {:.2f}°C".format(last_temp_max)
             
             rain=devList.lastData()['GardenRain']['Rain']
