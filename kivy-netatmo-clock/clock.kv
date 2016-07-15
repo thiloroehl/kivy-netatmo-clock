@@ -40,12 +40,9 @@ BoxLayout:
         padding: 20
         spacing: 20
         size_hint: (1, None)
+        
 
-        RobotoButton:
-            id: start_stop
-            text: 'Licht an'
-            on_press: app.start_stop()
-
+        
         RobotoButton:
             id: reset
             text: 'Licht aus'
@@ -57,6 +54,17 @@ BoxLayout:
             id: start_music
             text: 'Musik an'
             on_press: app.start_stop()
+        
+        RobotoButton:
+            id: stop_music
+            text: 'Musik aus'
+            on_press: app.start_stop()
+		
+		
+		RobotoButton:
+            id: debug
+            text: 'Debug'
+            on_press: app.start_debug()
 		
          
         RobotoButton:

@@ -6,16 +6,19 @@ from kivy.utils import get_color_from_hex
 import time
 import lnetatmo
 import traceback
-
-
-
+import socket
+import os
+import struct
 
 from time import strftime
 
 
 class ClockApp(App):
+    debug=False
+    ip="x.x.x.x"
     sw_started = False
     sw_seconds = 0
+    ipfetched=False
 
     def on_start(self):
         Clock.schedule_interval(self.update, 5)
@@ -101,12 +104,16 @@ class ClockApp(App):
             print (traceback.format_exc())
         
         print("Everything okay")
-        self.root.ids.status.text="Netatmo called at - "+strftime('%H:%M:%S')
-        
-    def start_stop(self):
-        self.root.ids.start_stop.text = 'Start' if self.sw_started else 'Stop'
-        self.sw_started = not self.sw_started
-
+        if self.debug:
+            if self.ipfetched: 
+                self.root.ids.status.text="Netatmo called at - "+strftime('%H:%M:%S') + "- IP {0}".format(self.ip)
+            else:
+                s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                s.connect(("8.8.8.8", 80))
+                self.ip= s.getsockname()
+                self.ipfetched=True
+                
+    
     def reset(self):
         if self.sw_started:
             self.root.ids.start_stop.text = 'Start'
@@ -116,10 +123,21 @@ class ClockApp(App):
     
     def restart(self):
         print ("Restarting..")
+    
+    def start_debug(self):
+        print ("Enter debug mode")
+        self.debug=True
+    
+    def testme(self):
+        print ("Testing")
+    
+    
 
 if __name__ == '__main__':
     Window.clearcolor = get_color_from_hex('#101216')
     LabelBase.register(name='Roboto',
-                       fn_regular='Roboto-Thin.ttf',
+                       fn_regular='Roboto-Light.ttf',
                        fn_bold='Roboto-Medium.ttf')
+
+            
     ClockApp().run()
